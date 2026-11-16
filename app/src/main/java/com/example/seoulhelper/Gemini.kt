@@ -7,6 +7,19 @@ import java.net.URL
 import java.net.URLEncoder
 
 object Gemini {
+    /** 속도를 위해 '생각' 단계를 끄거나 최소로 줄인다. */
+    private fun generationConfig(model: String): JSONObject {
+        val cfg = JSONObject().put("maxOutputTokens", 1024).put("temperature", 0.3)
+        val m = model.lowercase()
+        when {
+            m.contains("2.5") && !m.contains("pro") ->
+                cfg.put("thinkingConfig", JSONObject().put("thinkingBudget", 0))
+            m.contains("gemini-3") ->
+                cfg.put("thinkingConfig", JSONObject().put("thinkingLevel", "low"))
+        }
+        return cfg
+    }
+
     fun ask(apiKey: String, model: String, system: String, userText: String, jpegB64: String): String {
         val body = JSONObject()
             .put("systemInstruction", JSONObject().put("parts", JSONArray().put(JSONObject().put("text", system))))
@@ -27,7 +40,7 @@ object Gemini {
                         )
                 )
             )
-            .put("generationConfig", JSONObject().put("maxOutputTokens", 2048))
+            .put("generationConfig", generationConfig(model))
 
         val m = URLEncoder.encode(model.trim(), "UTF-8")
         val url = URL("https://generativelanguage.googleapis.com/v1beta/models/$m:generateContent")

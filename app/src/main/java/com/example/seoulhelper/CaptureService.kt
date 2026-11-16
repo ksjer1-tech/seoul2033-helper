@@ -459,7 +459,7 @@ class CaptureService : Service() {
                     finishWith("⚠️ 오류: ${e.message}")
                 }
             }
-        }, 350)
+        }, 200)
     }
 
     private fun finishWith(text: String) {
@@ -482,12 +482,12 @@ class CaptureService : Service() {
     }
 
     private fun toJpegBase64(bmp: Bitmap): String {
-        val targetW = 768
+        val targetW = 640
         val scaled = if (bmp.width > targetW) {
             Bitmap.createScaledBitmap(bmp, targetW, bmp.height * targetW / bmp.width, true)
         } else bmp
         val out = ByteArrayOutputStream()
-        scaled.compress(Bitmap.CompressFormat.JPEG, 80, out)
+        scaled.compress(Bitmap.CompressFormat.JPEG, 70, out)
         return Base64.encodeToString(out.toByteArray(), Base64.NO_WRAP)
     }
 
