@@ -4,6 +4,9 @@ on:
   push:
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -22,3 +25,11 @@ jobs:
         with:
           name: seoul2033-helper-apk
           path: app/build/outputs/apk/debug/app-debug.apk
+      - name: Publish APK as release
+        if: github.ref == 'refs/heads/main'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: latest
+          name: 최신 APK
+          files: app/build/outputs/apk/debug/app-debug.apk
+          make_latest: true
